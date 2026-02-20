@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Organize Topics{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold">Organize Topics</h1>
+    <div class="flex gap-2">
+        <button
+            hx-post="/api/organize/auto"
+            hx-swap="none"
+            hx-indicator="#org-loading"
+            onclick="setTimeout(() => location.reload(), 3000)"
+            class="px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-700 transition text-sm"
+        >
+            Auto-Organize with Claude
+        </button>
+        <span id="org-loading" class="htmx-indicator text-gray-500 text-sm self-center">Processing...</span>
+    </div>
+</div>
+
+{% if unassigned %}
+<div class="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+    <h3 class="font-medium text-sm mb-2">Unassigned Metaphors ({{ unassigned|length }})</h3>
+    <div class="grid gap-1 text-xs">
+        {% for m in unassigned[:10] %}
+        <div class="text-gray-600">"{{ m.exact_quote[:80] }}..." — Ch {{ m.chapter_id }}</div>
+        {% endfor %}
+        {% if unassigned|length > 10 %}
+        <div class="text-gray-400">...and {{ unassigned|length - 10 }} more</div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<div class="grid gap-4" id="topics-container">
+    {% for item in topics_data %}
+    <div class="bg-white rounded-lg border border-gray-200 p-4" data-topic-id="{{ item.topic.id }}">
+        <div class="flex items-center justify-between mb-3">
+            <div>
+                <h2 class="text-lg font-semibold">{{ item.topic.name }}</h2>
+                <p class="text-sm text-gray-500">{{ item.topic.description }}</p>
+            </div>
+            <span class="text-sm text-gray-400">{{ item.metaphors|length }} metaphors</span>
+        </div>
+        <div class="grid gap-2">
+            {% for m in item.metaphors %}
+            <div class="flex items-start gap-2 text-sm p-2 bg-gray-50 rounded">
+                <span class="text-gray-400 shrink-0">Ch {{ m.chapter_id }}</span>
+                <span class="italic text-gray-700">"{{ m.exact_quote[:100] }}{% if m.exact_quote|length > 100 %}...{% endif %}"</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not topics_data %}
+<p class="text-gray-500 text-center py-8">No topics yet. Extract metaphors first, then click "Auto-Organize with Claude".</p>
+{% endif %}
+{% endblock %}

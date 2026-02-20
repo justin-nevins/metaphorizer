@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Translations{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Translations</h1>
+
+{% for item in papers_data %}
+<div class="bg-white rounded-lg border border-gray-200 p-6 mb-4">
+    <h2 class="font-semibold mb-4">{{ item.paper.title }}</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Spanish -->
+        <div class="border rounded-lg p-4">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-medium">Spanish</h3>
+                {% if item.has_es %}
+                <div class="flex gap-2">
+                    <span class="text-green-600 text-sm">Complete</span>
+                    <a href="/api/paper/{{ item.paper.id }}/pdf/es" class="text-sm text-blue-600 hover:underline">PDF</a>
+                </div>
+                {% else %}
+                <button
+                    onclick="translatePaper({{ item.paper.id }}, 'es', this)"
+                    class="px-3 py-1 bg-gray-900 text-white rounded text-sm hover:bg-gray-700"
+                >
+                    Translate
+                </button>
+                {% endif %}
+            </div>
+            <div id="es-progress-{{ item.paper.id }}" class="hidden text-sm text-gray-500"></div>
+        </div>
+
+        <!-- Mandarin -->
+        <div class="border rounded-lg p-4">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-medium">Mandarin Chinese</h3>
+                {% if item.has_zh %}
+                <div class="flex gap-2">
+                    <span class="text-green-600 text-sm">Complete</span>
+                    <a href="/api/paper/{{ item.paper.id }}/pdf/zh" class="text-sm text-blue-600 hover:underline">PDF</a>
+                </div>
+                {% else %}
+                <button
+                    onclick="translatePaper({{ item.paper.id }}, 'zh', this)"
+                    class="px-3 py-1 bg-gray-900 text-white rounded text-sm hover:bg-gray-700"
+                >
+                    Translate
+                </button>
+                {% endif %}
+            </div>
+            <div id="zh-progress-{{ item.paper.id }}" class="hidden text-sm text-gray-500"></div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% if not papers_data %}
+<p class="text-gray-500 text-center py-8">No papers generated yet. Generate a paper first.</p>
+{% endif %}
+
+<script>
+function translatePaper(paperId, lang, btn) {
+    btn.disabled = true;
+    btn.textContent = 'Translating...';
+    const progress = document.getElementById(`${lang}-progress-${paperId}`);
+    progress.classList.remove('hidden');
+
+    fetch(`/api/paper/${paperId}/translate/${lang}`, {method: 'POST'}).then(response => {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        function read() {
+            reader.read().then(({done, value}) => {
+                if (done) return;
+                const text = decoder.decode(value);
+                const lines = text.split('\n').filter(l => l.startsWith('data: '));
+                for (const line of lines) {
+                    const data = JSON.parse(line.slice(6));
+                    if (data.status === 'done') {
+                        progress.textContent = 'Complete! Reloading...';
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        progress.textContent = `${data.section}: ${data.status}`;
+                    }
+                }
+                read();
+            });
+        }
+        read();
+    });
+}
+</script>
+{% endblock %}

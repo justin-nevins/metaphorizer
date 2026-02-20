@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Metaphorizer — Dashboard{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <h1 class="text-3xl font-bold mb-2">Metaphorizer</h1>
+    <p class="text-gray-600 mb-8">AI-powered metaphor analysis of The Great Gatsby</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <a href="/ingest" class="block p-6 bg-white rounded-lg border border-gray-200 hover:border-gray-400 transition">
+            <h2 class="text-lg font-semibold mb-1">1. Ingest Text</h2>
+            <p class="text-sm text-gray-500">Fetch The Great Gatsby from Project Gutenberg and split into chapters</p>
+        </a>
+
+        <a href="/review" class="block p-6 bg-white rounded-lg border border-gray-200 hover:border-gray-400 transition">
+            <h2 class="text-lg font-semibold mb-1">2. Extract & Review</h2>
+            <p class="text-sm text-gray-500">Extract metaphors with Claude, then review, edit, and select</p>
+        </a>
+
+        <a href="/topics" class="block p-6 bg-white rounded-lg border border-gray-200 hover:border-gray-400 transition">
+            <h2 class="text-lg font-semibold mb-1">3. Organize Topics</h2>
+            <p class="text-sm text-gray-500">Group metaphors into thematic topics for the paper</p>
+        </a>
+
+        <a href="/paper/config" class="block p-6 bg-white rounded-lg border border-gray-200 hover:border-gray-400 transition">
+            <h2 class="text-lg font-semibold mb-1">4. Generate Paper</h2>
+            <p class="text-sm text-gray-500">Configure word counts and generate the academic paper</p>
+        </a>
+
+        <a href="/translations" class="block p-6 bg-white rounded-lg border border-gray-200 hover:border-gray-400 transition md:col-span-2">
+            <h2 class="text-lg font-semibold mb-1">5. Translate & Export</h2>
+            <p class="text-sm text-gray-500">Translate to Spanish and Mandarin, download PDFs</p>
+        </a>
+    </div>
+</div>
+{% endblock %}

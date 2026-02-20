@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Generate Paper{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Generate Paper</h1>
+
+<div class="max-w-2xl">
+    <div class="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+        <h2 class="font-semibold mb-4">Paper Configuration</h2>
+        <div class="grid gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Title</label>
+                <input type="text" id="paper-title" value="Metaphorical Architecture in The Great Gatsby"
+                    class="w-full border rounded px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Author</label>
+                <input type="text" id="paper-author" placeholder="Your name"
+                    class="w-full border rounded px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Target Pages</label>
+                <input type="number" id="paper-pages" value="10" min="1" max="30"
+                    class="w-32 border rounded px-3 py-2 text-sm">
+            </div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t">
+            <h3 class="text-sm font-medium mb-2">Topics to include:</h3>
+            {% for t in topics %}
+            <div class="text-sm text-gray-600 py-1">{{ loop.index }}. {{ t.name }}</div>
+            {% endfor %}
+            {% if not topics %}
+            <p class="text-sm text-gray-400">No topics organized yet. Go to Topics first.</p>
+            {% endif %}
+        </div>
+
+        <button
+            onclick="generatePaper()"
+            class="mt-4 px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-700 transition text-sm"
+            {% if not topics %}disabled class="opacity-50"{% endif %}
+        >
+            Generate Paper
+        </button>
+    </div>
+
+    <div id="generation-progress" class="hidden mb-6 p-4 bg-blue-50 rounded-lg text-sm">
+        <p id="gen-status">Generating...</p>
+    </div>
+
+    {% if papers %}
+    <h2 class="font-semibold mb-3">Generated Papers</h2>
+    <div class="grid gap-2">
+        {% for p in papers %}
+        <div class="flex items-center justify-between bg-white rounded-lg border border-gray-200 p-4">
+            <div>
+                <div class="font-medium text-sm">{{ p.title }}</div>
+                <div class="text-xs text-gray-500">{{ p.status }} · {{ p.created_at.strftime('%Y-%m-%d %H:%M') if p.created_at }}</div>
+            </div>
+            <div class="flex gap-2">
+                <a href="/paper/preview/{{ p.id }}" class="text-sm text-blue-600 hover:underline">Preview</a>
+                <a href="/api/paper/{{ p.id }}/pdf" class="text-sm text-blue-600 hover:underline">PDF</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function generatePaper() {
+    const title = document.getElementById('paper-title').value;
+    const author = document.getElementById('paper-author').value;
+    const pages = parseInt(document.getElementById('paper-pages').value);
+    const progress = document.getElementById('generation-progress');
+    const status = document.getElementById('gen-status');
+    progress.classList.remove('hidden');
+
+    fetch('/api/paper/generate', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({title, author, target_pages: pages})
+    }).then(response => {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        function read() {
+            reader.read().then(({done, value}) => {
+                if (done) return;
+                const text = decoder.decode(value);
+                const lines = text.split('\n').filter(l => l.startsWith('data: '));
+                for (const line of lines) {
+                    const data = JSON.parse(line.slice(6));
+                    if (data.status === 'done') {
+                        status.textContent = 'Paper generated! Reloading...';
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        status.textContent = `${data.section}: ${data.status}`;
+                    }
+                }
+                read();
+            });
+        }
+        read();
+    });
+}
+</script>
+{% endblock %}

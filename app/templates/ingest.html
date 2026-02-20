@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Ingest Text{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Ingest Text</h1>
+
+<div class="mb-6">
+    <button
+        hx-post="/api/ingest"
+        hx-target="#ingest-result"
+        hx-swap="innerHTML"
+        hx-indicator="#loading"
+        class="px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-700 transition"
+    >
+        Fetch from Project Gutenberg
+    </button>
+    <span id="loading" class="htmx-indicator ml-2 text-gray-500">Loading...</span>
+</div>
+
+<div id="ingest-result">
+    {% if chapters %}
+    <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 border-b">
+                <tr>
+                    <th class="text-left px-4 py-3 font-medium">Chapter</th>
+                    <th class="text-left px-4 py-3 font-medium">Title</th>
+                    <th class="text-right px-4 py-3 font-medium">Words</th>
+                    <th class="text-center px-4 py-3 font-medium">Extracted</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ch in chapters %}
+                <tr class="border-b last:border-0">
+                    <td class="px-4 py-3">{{ ch.number }}</td>
+                    <td class="px-4 py-3">{{ ch.title }}</td>
+                    <td class="px-4 py-3 text-right">{{ ch.word_count }}</td>
+                    <td class="px-4 py-3 text-center">
+                        {% if ch.processed %}
+                        <span class="text-green-600">Done</span>
+                        {% else %}
+                        <span class="text-gray-400">Pending</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-gray-500">No chapters ingested yet. Click the button above to start.</p>
+    {% endif %}
+</div>
+{% endblock %}

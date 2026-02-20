@@ -1,0 +1,34 @@
+{
+  "metaphor_systems": [
+    {
+      "name": "Light and Darkness",
+      "description": "Hope, the American Dream, and the tension between aspiration and moral corruption. The green light as the central symbol of the unattainable.",
+      "examples": ["green light", "starlight to casual moths", "gleaming white"]
+    },
+    {
+      "name": "Water and Drowning",
+      "description": "Time's flow, desire, and ultimate futility. Water as both life-giving and fatal, culminating in the novel's final metaphor of boats against the current.",
+      "examples": ["boats against the current", "swimming pools", "drifting"]
+    },
+    {
+      "name": "Vision and Surveillance",
+      "description": "The absent God, faded moral authority, and seeing without acting. Doctor Eckleburg's eyes as the novel's most haunting image of judgment without intervention.",
+      "examples": ["eyes of Doctor T.J. Eckleburg", "watching Daisy's house", "owl-eyed man"]
+    },
+    {
+      "name": "Time and the Past",
+      "description": "The impossibility of repeating the past, clocks, seasons, and Gatsby's doomed attempt to recreate what was. Time as the novel's ultimate antagonist.",
+      "examples": ["Can't repeat the past?", "clocks", "five years"]
+    },
+    {
+      "name": "Money as Substance",
+      "description": "Wealth as an intrinsic quality rather than an acquisition. Class privilege made audible, visible, and tangible throughout the novel.",
+      "examples": ["Her voice is full of money", "the jingle of it", "golden girl"]
+    },
+    {
+      "name": "Nature Perverted",
+      "description": "The natural order inverted by industrial capitalism. Ashes that grow like wheat, moths drawn to fatal light, flowers crushed under the weight of corruption.",
+      "examples": ["valley of ashes", "fantastic farm", "moths drawn to light"]
+    }
+  ]
+}

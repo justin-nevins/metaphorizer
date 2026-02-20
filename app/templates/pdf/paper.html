@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: letter;
+            margin: 1in;
+            @bottom-center {
+                content: counter(page);
+                font-family: {{ font_family }};
+                font-size: 10pt;
+            }
+        }
+        @page:first {
+            @bottom-center { content: none; }
+        }
+        body {
+            font-family: {{ font_family }};
+            font-size: 12pt;
+            line-height: 2;
+            color: #000;
+        }
+        .title-page {
+            text-align: center;
+            padding-top: 3in;
+            page-break-after: always;
+        }
+        .title-page h1 {
+            font-size: 18pt;
+            font-weight: bold;
+            margin-bottom: 0.5in;
+        }
+        .title-page .author {
+            font-size: 14pt;
+            margin-bottom: 0.25in;
+        }
+        .title-page .date {
+            font-size: 12pt;
+            color: #555;
+        }
+        h2 {
+            font-size: 14pt;
+            font-weight: bold;
+            margin-top: 0.5in;
+            margin-bottom: 0.25in;
+        }
+        p {
+            text-indent: 0.5in;
+            margin: 0;
+        }
+        p:first-child {
+            text-indent: 0;
+        }
+        blockquote {
+            margin: 0.25in 0.5in;
+            font-style: italic;
+        }
+        .section {
+            page-break-inside: avoid;
+        }
+        .exec-summary {
+            page-break-after: always;
+        }
+        .index-entry {
+            text-indent: 0;
+            margin-bottom: 6pt;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="title-page">
+        <h1>{{ title }}</h1>
+        {% if author %}<div class="author">{{ author }}</div>{% endif %}
+        <div class="date">{{ "now" | string }}</div>
+    </div>
+
+    {% for section in sections %}
+    <div class="section {% if section.type == 'exec_summary' %}exec-summary{% endif %}">
+        <h2>{{ section.title }}</h2>
+        {% if section.type == 'index' %}
+            {% for line in section.content.split('\n') %}
+                {% if line.strip() and not line.startswith('##') %}
+                <div class="index-entry">{{ line }}</div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            {% for para in section.content.split('\n\n') %}
+                {% if para.strip() %}
+                <p>{{ para.strip() }}</p>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+    {% endfor %}
+</body>
+</html>

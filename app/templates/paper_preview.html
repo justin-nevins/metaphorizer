@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Paper Preview{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="text-2xl font-bold">{{ paper.title }}</h1>
+        <p class="text-sm text-gray-500">{{ paper.author }} · {{ paper.status }}</p>
+    </div>
+    <div class="flex gap-2">
+        <a href="/api/paper/{{ paper.id }}/pdf/en" class="px-3 py-1.5 bg-gray-900 text-white rounded text-sm hover:bg-gray-700">Download PDF</a>
+        <a href="/translations" class="px-3 py-1.5 border border-gray-300 rounded text-sm hover:bg-gray-50">Translations</a>
+    </div>
+</div>
+
+<div class="max-w-3xl mx-auto bg-white rounded-lg border border-gray-200 p-8" style="font-family: 'Liberation Serif', 'Times New Roman', serif;">
+    {% for section in sections %}
+    <div class="mb-8">
+        <h2 class="text-xl font-bold mb-3">{{ section.title }}</h2>
+        <div class="leading-relaxed text-gray-800 whitespace-pre-wrap">{{ section.content_en }}</div>
+        <div class="text-xs text-gray-400 mt-2">{{ section.actual_words }} words (target: {{ section.target_words }})</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
