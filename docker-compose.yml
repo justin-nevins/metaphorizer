@@ -9,3 +9,11 @@ services:
       - .env
     volumes:
       - ./data:/app/data
+    networks:
+      - default
+      - caddy
+
+networks:
+  caddy:
+    name: n8n-docker-caddy_default
+    external: true
