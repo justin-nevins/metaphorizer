@@ -8,8 +8,10 @@ from app.config import settings
 from app.models.metaphor import Chapter
 
 
+# Match centered Roman numerals (chapter markers in Gutenberg text)
+# The text has lines like "                                  I\r" (lots of leading spaces)
 CHAPTER_PATTERN = re.compile(
-    r"^Chapter\s+(I{1,3}|IV|V|VI{0,3}|IX)\s*$",
+    r"^\s{20,}(I{1,3}|IV|V|VI{1,3}|IX)\s*$",
     re.MULTILINE,
 )
 
@@ -23,7 +25,8 @@ async def fetch_text() -> str:
     async with httpx.AsyncClient(follow_redirects=True) as client:
         resp = await client.get(settings.gutenberg_url, timeout=30)
         resp.raise_for_status()
-    return resp.text
+    # Normalize line endings
+    return resp.text.replace('\r\n', '\n').replace('\r', '\n')
 
 
 def parse_chapters(text: str) -> list[dict]:
