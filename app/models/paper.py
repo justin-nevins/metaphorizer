@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, Integer, String, Text
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 
 from app.models.database import Base
@@ -14,7 +14,7 @@ class Paper(Base):
     author = Column(String(200), default="")
     status = Column(String(50), default="draft")
     target_pages = Column(Integer, default=10)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     sections = relationship("PaperSection", back_populates="paper", order_by="PaperSection.sort_order")
 
@@ -23,7 +23,7 @@ class PaperSection(Base):
     __tablename__ = "paper_sections"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    paper_id = Column(Integer, nullable=False)
+    paper_id = Column(Integer, ForeignKey("papers.id"), nullable=False)
     section_type = Column(String(50), nullable=False)
     topic_id = Column(Integer, nullable=True)
     title = Column(String(500), default="")
